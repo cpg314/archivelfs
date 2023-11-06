@@ -1,0 +1,4 @@
+max_width = 100
+attr_fn_like_width = 90
+reorder_imports = true
+edition = "2021"
