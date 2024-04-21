@@ -5,7 +5,6 @@ use futures::stream::{self, StreamExt, TryStreamExt};
 use log::*;
 
 #[derive(Parser)]
-/// Allows retrieving Git LFS files when git-archive only provides pointers.
 struct Flags {
     root: Option<PathBuf>,
     #[clap(long)]

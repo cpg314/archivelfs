@@ -1,0 +1,11 @@
+accepted = [
+    "Apache-2.0",
+    "MIT",
+    "ISC",
+    "MPL-2.0",
+    "Unicode-DFS-2016",
+    "BSD-3-Clause",
+    "OpenSSL"
+]
+
+no-clearly-defined = true
