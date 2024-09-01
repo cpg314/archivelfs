@@ -4,22 +4,28 @@ Allows retrieving [Git LFS](https://git-lfs.com/) files when [git-archive](https
 
 See <https://github.com/git-lfs/git-lfs/issues/1322>
 
-### Usage
+## Usage
 
 ```
 Allows retrieving Git LFS files when git-archive only provides pointers
-
-Usage: archivelfs [OPTIONS] --lfs-url <LFS_URL> [ROOT]
+Usage: archivelfs [OPTIONS] [ROOT]
 
 Arguments:
-  [ROOT]
+  [ROOT]  Repository root
 
 Options:
-      --jobs <JOBS>        [default: 4]
-  -h, --help               Print help
+      --jobs <JOBS>  [default: 4]
+  -h, --help         Print help
+  -V, --version      Print version
 ```
 
-### Installation
+## Installation
+
+### Binaries
+
+The [releases page](https://github.com/cpg314/archivelfs/releases) contains packages for Ubuntu/Debian, Arch Linux, as well as tarballs.
+
+### From source
 
 ```
 $ cargo install --git https://github.com/cpg314/archivelfs

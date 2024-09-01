@@ -6,6 +6,7 @@ use futures::stream::{self, StreamExt, TryStreamExt};
 use log::*;
 
 #[derive(Parser)]
+#[clap(version)]
 struct Flags {
     /// Repository root
     root: Option<PathBuf>,
