@@ -1,14 +1,14 @@
 use std::path::{Path, PathBuf};
 
+use anyhow::Context;
 use clap::Parser;
 use futures::stream::{self, StreamExt, TryStreamExt};
 use log::*;
 
 #[derive(Parser)]
 struct Flags {
+    /// Repository root
     root: Option<PathBuf>,
-    #[clap(long)]
-    lfs_url: String,
     #[clap(long, default_value_t = 4)]
     jobs: usize,
 }
@@ -39,15 +39,41 @@ impl LfsPointer {
     }
 }
 
+#[derive(Debug, serde::Deserialize)]
+struct LfsConfigInner {
+    url: String,
+    #[allow(dead_code)]
+    fetchinclude: Option<String>,
+    #[allow(dead_code)]
+    fetchexclude: Option<String>,
+}
+#[derive(Debug, serde::Deserialize)]
+struct LfsConfig {
+    lfs: LfsConfigInner,
+}
+
 async fn main_impl() -> anyhow::Result<()> {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
-    let mut args = Flags::parse();
+    let args = Flags::parse();
 
     let root = if let Some(root) = args.root {
         root
     } else {
         std::env::current_dir()?
     };
+
+    let config = root.join(".lfsconfig");
+    let config = std::fs::read_to_string(&config)
+        .with_context(|| format!("Could not find LFS configuration at {:?}", config))?;
+    let config: LfsConfig = toml::from_str(&config)?;
+    debug!("{:?}", config);
+    let mut url = config.lfs.url;
+    if !url.ends_with('/') {
+        url += "/";
+    }
+    let url = reqwest::Url::parse(&url)?;
+    let url = url.join("")?.join("object/")?;
+
     let files: Vec<_> = walkdir::WalkDir::new(root)
         .min_depth(1)
         .into_iter()
@@ -64,11 +90,6 @@ async fn main_impl() -> anyhow::Result<()> {
     );
     let client = reqwest::Client::new();
 
-    if !args.lfs_url.ends_with('/') {
-        args.lfs_url += "/";
-    }
-    let url = reqwest::Url::parse(&args.lfs_url)?;
-    let url = url.join("")?.join("object/")?;
     let start = std::time::Instant::now();
     info!("Downloading...");
     stream::iter(files)
@@ -77,6 +98,7 @@ async fn main_impl() -> anyhow::Result<()> {
             let url = url.clone();
             async move {
                 let url = url.join(&f.sha256)?;
+                debug!("Downloading {} to {:?}...", url, f.filename);
                 let data = client
                     .get(url)
                     .send()
