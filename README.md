@@ -15,7 +15,6 @@ Arguments:
   [ROOT]
 
 Options:
-      --lfs-url <LFS_URL>
       --jobs <JOBS>        [default: 4]
   -h, --help               Print help
 ```
