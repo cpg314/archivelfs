@@ -2,6 +2,10 @@
 name = "archivelfs"
 version = "0.1.1"
 edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "Retrieve Git LFS files when git-archive only provides pointers." 
+repository = "https://github.com/cpg314/archive-lfs"
+categories = ["development-tools", "command-line-utilities"]
 
 [dependencies]
 anyhow = "1.0.75"
